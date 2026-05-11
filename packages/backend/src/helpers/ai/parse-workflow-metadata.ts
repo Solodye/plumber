@@ -2,6 +2,10 @@ import { parse as parseYaml } from 'yaml'
 import z from 'zod/v3'
 import { fromZodError } from 'zod-validation-error'
 
+import {
+  TOOLBOX_ACTIONS,
+  TOOLBOX_APP_KEY,
+} from '@/apps/toolbox/common/constants'
 import { BadUserInputError } from '@/errors/graphql-errors'
 
 export type WorkflowData = ReturnType<typeof parseWorkflowMetadata>
@@ -76,15 +80,29 @@ function parseWorkflowMetadata(text: string) {
       key: firstStep.key,
       description: String(firstStep.description ?? ''),
     },
-    actions: remainingSteps.map((step: any) => ({
-      type: 'action' as const,
-      appKey: step.appKey,
-      key: step.key,
-      description: String(step.description ?? ''),
-      config: {
-        stepName: String(step.description ?? step.key ?? '').slice(0, 64),
-      },
-    })),
+    actions: remainingSteps.map((step: any) => {
+      const isIfThen =
+        step.appKey === TOOLBOX_APP_KEY && step.key === TOOLBOX_ACTIONS.IF_THEN
+
+      return {
+        type: 'action' as const,
+        appKey: step.appKey,
+        key: step.key,
+        // description → templateConfig.customTemplate: setup guide shown above the step (max 100 chars)
+        description: String(step.description ?? '').slice(0, 100),
+        config: {
+          // stepName → step title label (max 64 chars); falls back to key if omitted
+          stepName: String(step.stepName ?? step.key ?? '').slice(0, 64),
+        },
+        // if-then requires parameters with depth and branchName for branch labelling
+        ...(isIfThen && {
+          parameters: {
+            depth: 0,
+            branchName: String(step.branchName ?? 'Branch'),
+          },
+        }),
+      }
+    }),
   }
 }
 

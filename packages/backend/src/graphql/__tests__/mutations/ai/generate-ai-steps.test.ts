@@ -20,15 +20,18 @@ steps:
   - step: 1
     appKey: formsg
     key: newSubmission
-    description: Triggers when a new FormSG submission is received
+    stepName: New form submission
+    description: Configure to trigger when a new FormSG submission is received
   - step: 2
     appKey: postman
     key: sendTransactionalEmail
-    description: Send a welcome email to the new user
+    stepName: Send welcome email
+    description: Send a transactional email to the new user using their email address
   - step: 3
     appKey: postman-sms
     key: sendSms
-    description: Send a welcome SMS to the new user
+    stepName: Send welcome SMS
+    description: Send an SMS to the new user using their phone number from the trigger
 -->
 `
 
@@ -120,7 +123,7 @@ steps:
       expect(result.name).toBe('Build with AI')
     })
 
-    it('should set config.stepName from step description', async () => {
+    it('should set config.stepName from stepName field', async () => {
       const result = await generateAiSteps(
         null,
         { input: DEFAULT_INPUT },
@@ -128,8 +131,70 @@ steps:
       )
 
       expect((result.actions as any[])[0].config.stepName).toBe(
-        'Send a welcome email to the new user',
+        'Send welcome email',
       )
+    })
+
+    it('should fall back to key for config.stepName when stepName is absent', async () => {
+      const promptWithoutStepName = `
+<!-- WORKFLOW_METADATA
+name: Welcome Email Workflow
+steps:
+  - step: 1
+    appKey: formsg
+    key: newSubmission
+    description: Configure to trigger when a new FormSG submission is received
+  - step: 2
+    appKey: postman
+    key: sendTransactionalEmail
+    description: Send a transactional email to the new user
+-->
+`
+      const result = await generateAiSteps(
+        null,
+        { input: { ...DEFAULT_INPUT, prompt: promptWithoutStepName } },
+        context,
+      )
+
+      expect((result.actions as any[])[0].config.stepName).toBe(
+        'sendTransactionalEmail',
+      )
+    })
+
+    it('should map branchName to parameters.branchName for if-then steps', async () => {
+      const promptWithIfThen = `
+<!-- WORKFLOW_METADATA
+name: Priority Routing
+steps:
+  - step: 1
+    appKey: formsg
+    key: newSubmission
+    stepName: New form submission
+    description: Configure to trigger when a new FormSG submission is received
+  - step: 2
+    appKey: toolbox
+    key: ifThen
+    stepName: Check priority
+    description: Set the condition to check if the priority field equals High
+    branchName: Priority is High
+  - step: 3
+    appKey: postman
+    key: sendTransactionalEmail
+    stepName: Send high priority email
+    description: Send an email for high priority submissions
+-->
+`
+      const result = await generateAiSteps(
+        null,
+        { input: { ...DEFAULT_INPUT, prompt: promptWithIfThen } },
+        context,
+      )
+
+      const { actions } = result as any
+      expect(actions[0].parameters).toStrictEqual({
+        depth: 0,
+        branchName: 'Priority is High',
+      })
     })
 
     it('should add templateConfig to each action', async () => {
