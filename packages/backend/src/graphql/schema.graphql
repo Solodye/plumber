@@ -141,7 +141,7 @@ type Mutation {
 input GenerateAiStepsInput {
   prompt: String!
   sessionId: String
-  traceId: String!
+  traceId: String
 }
 
 input FeedbackInput {
