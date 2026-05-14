@@ -64,7 +64,7 @@ export default function StepsPreview({ isReadyForPreview }: StepsPreviewProps) {
     clearPersistedState,
   } = useAiBuilderContext()
 
-  const chatTraceId = chatMessages.findLast(
+  const chatTraceId = chatMessages?.findLast(
     (m) => !m.isUser && m.traceId,
   )?.traceId
 
