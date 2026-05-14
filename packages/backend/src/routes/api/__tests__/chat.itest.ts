@@ -174,14 +174,10 @@ describe('Chat Route Handler', () => {
           },
         },
       })
-      mocks.getPrompt
-        .mockResolvedValueOnce({
-          prompt: 'test prompt',
-          toJSON: vi.fn(),
-        })
-        .mockResolvedValueOnce({
-          prompt: 'readiness prompt',
-        })
+      mocks.getPrompt.mockResolvedValueOnce({
+        prompt: 'test prompt',
+        toJSON: vi.fn(),
+      })
       mocks.getActiveTraceId.mockReturnValueOnce('test-trace-id')
 
       await executeChatPostHandler(mockReq, mockRes)
@@ -220,14 +216,11 @@ describe('Chat Route Handler', () => {
           },
         },
       })
-      mocks.getPrompt
-        .mockResolvedValueOnce({
-          prompt: 'test prompt',
-          toJSON: vi.fn(),
-        })
-        .mockResolvedValueOnce({
-          prompt: 'readiness prompt',
-        })
+      mocks.getPrompt.mockResolvedValueOnce({
+        prompt: 'test prompt',
+        toJSON: vi.fn(),
+      })
+
       mocks.getActiveTraceId.mockReturnValueOnce('test-trace-id')
 
       await executeChatPostHandler(mockReq, mockRes)
@@ -343,7 +336,6 @@ describe('Chat Route Handler', () => {
           enabled: true,
           config: {
             chatPromptName: 'chat-v0',
-            chatReadinessPromptName: 'chat-readiness-v0',
             version: 'production',
           },
         },
@@ -387,7 +379,6 @@ describe('Chat Route Handler', () => {
           enabled: true,
           config: {
             chatPromptName: 'chat-v0',
-            chatReadinessPromptName: 'chat-readiness-v0',
             version: 'production',
           },
         },
@@ -435,19 +426,15 @@ describe('Chat Route Handler', () => {
           enabled: true,
           config: {
             chatPromptName: 'chat-v0',
-            chatReadinessPromptName: 'chat-readiness-v0',
             version: 'production',
           },
         },
       })
-      mocks.getPrompt
-        .mockResolvedValueOnce({
-          prompt: 'test prompt',
-          toJSON: vi.fn(),
-        })
-        .mockResolvedValueOnce({
-          prompt: 'readiness prompt',
-        })
+      mocks.getPrompt.mockResolvedValueOnce({
+        prompt: 'test prompt',
+        toJSON: vi.fn(),
+      })
+
       mocks.getActiveTraceId.mockReturnValueOnce('test-trace-id')
 
       await executeChatPostHandler(mockReq, mockRes)
