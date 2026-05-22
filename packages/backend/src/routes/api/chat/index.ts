@@ -172,7 +172,8 @@ const handleChatStream = observe(
                   type: 'data-isChatReady',
                   data: {
                     isChatReady: hasWorkflowMetadata,
-                    ...(flowSteps ? { flowSteps } : { error: workflowError }),
+                    ...(hasWorkflowMetadata &&
+                      (flowSteps ? { flowSteps } : { error: workflowError })),
                   },
                 })
               } catch (error) {
