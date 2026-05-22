@@ -12,6 +12,11 @@ const mocks = vi.hoisted(() => {
     })),
   }
 
+  const flow = {
+    id: 'flow-id',
+    config: null as { isKillswitched?: boolean } | null,
+  }
+
   return {
     step: {
       id: 'step-id',
@@ -19,11 +24,9 @@ const mocks = vi.hoisted(() => {
       parameters: {},
       key: 'new-submission',
       config: {},
+      flow,
     },
-    flow: {
-      id: 'flow-id',
-      config: null as { isKillswitched?: boolean } | null,
-    },
+    flow,
     execution,
     shouldTriggerProceed: vi.fn(() => ({ shouldExecute: true })),
   }
@@ -33,17 +36,9 @@ vi.mock('@/models/step', () => ({
   default: {
     query: vi.fn(() => ({
       findById: vi.fn(() => ({
-        throwIfNotFound: vi.fn(() => mocks.step),
-      })),
-    })),
-  },
-}))
-
-vi.mock('@/models/flow', () => ({
-  default: {
-    query: vi.fn(() => ({
-      findById: vi.fn(() => ({
-        throwIfNotFound: vi.fn(() => mocks.flow),
+        withGraphFetched: vi.fn(() => ({
+          throwIfNotFound: vi.fn(() => mocks.step),
+        })),
       })),
     })),
   },

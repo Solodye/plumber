@@ -160,7 +160,7 @@ export const processAction = async (options: ProcessActionOptions) => {
   let executionError: unknown = null
   try {
     if (flow.config?.isKillswitched) {
-      throw new UnrecoverableError(`Pipe ${flowId} has been killed via killswitch`)
+      throw new UnrecoverableError(`Pipe ${flowId} has been killswitched`)
     }
 
     // Cannot assign directly to runResult due to void return type.

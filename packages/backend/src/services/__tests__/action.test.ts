@@ -4,7 +4,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { processAction } from '../action'
 
 const mocks = vi.hoisted(() => {
-  const executionStep = { id: 'exec-step-id', isFailed: false, status: 'success' }
+  const executionStep = {
+    id: 'exec-step-id',
+    isFailed: false,
+    status: 'success',
+  }
   const execution = {
     id: 'execution-id',
     $relatedQuery: vi.fn(() => ({
