@@ -218,4 +218,20 @@ describe('webhook handler', () => {
       expect(mocks.response.sendStatus).toHaveReturnedWith(200)
     })
   })
+
+  describe('pipe killswitch', () => {
+    beforeEach(() => {
+      mocks.flow.config = {}
+    })
+
+    it('returns 500 and does not process the trigger or enqueue a job', async () => {
+      mocks.flow.config = { isKillswitched: true }
+
+      await webhookHandler(request, mocks.response)
+
+      expect(mocks.response.sendStatus).toHaveReturnedWith(500)
+      expect(mocks.processTrigger).not.toHaveBeenCalled()
+      expect(mocks.enqueueActionJob).not.toHaveBeenCalled()
+    })
+  })
 })
