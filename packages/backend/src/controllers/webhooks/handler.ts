@@ -63,6 +63,10 @@ export default async (request: IRequest, response: Response) => {
     return response.sendStatus(404)
   }
 
+  if (flow.config?.isKillswitched) {
+    return response.sendStatus(500)
+  }
+
   const { maxQps = DEFAULT_MAX_QPS, rejectIfOverMaxQps = true } =
     flow.config ?? {}
 

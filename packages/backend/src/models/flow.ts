@@ -77,6 +77,9 @@ class Flow extends Base {
               },
             },
           },
+          isKillswitched: {
+            type: 'boolean',
+          },
         },
       },
     },

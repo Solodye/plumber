@@ -1,9 +1,11 @@
 import type { IJSONObject, ITriggerItem } from '@plumber/types'
 
+import { UnrecoverableError } from '@taskforcesh/bullmq-pro'
 import { z } from 'zod'
 
 import Execution from '@/models/execution'
 import ExecutionStep from '@/models/execution-step'
+import Flow from '@/models/flow'
 import Step from '@/models/step'
 
 import { shouldTriggerProceed } from './helpers/should-trigger-proceed'
@@ -54,6 +56,11 @@ export const processTrigger = async (
   const { flowId, stepId, triggerItem, error, testRun } = options
 
   const step = await Step.query().findById(stepId).throwIfNotFound()
+  const flow = await Flow.query().findById(flowId).throwIfNotFound()
+
+  if (flow.config?.isKillswitched) {
+    throw new UnrecoverableError(`Pipe ${flowId} has been killed via killswitch`)
+  }
 
   // only need to check if can proceed if there is no error and not a test run
   // if error, skip and let the error throw
