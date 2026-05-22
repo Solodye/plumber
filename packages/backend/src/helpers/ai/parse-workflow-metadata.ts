@@ -8,6 +8,10 @@ import {
 } from '@/apps/toolbox/common/constants'
 import { BadUserInputError } from '@/errors/graphql-errors'
 
+export const WORKFLOW_METADATA_MARKER = '<!-- WORKFLOW_METADATA'
+export const WORKFLOW_METADATA_REGEX =
+  /<!--\s*WORKFLOW_METADATA\s*([\s\S]*?)-->/
+
 export type WorkflowData = ReturnType<typeof parseWorkflowMetadata>
 
 // Converts a ZodError into a user-facing message with workflow-specific context.
@@ -44,7 +48,7 @@ function formatWorkflowError(
 }
 
 function parseWorkflowMetadata(text: string) {
-  const match = text.match(/<!--\s*WORKFLOW_METADATA\s*([\s\S]*?)-->/)
+  const match = text.match(WORKFLOW_METADATA_REGEX)
   if (!match) {
     throw new BadUserInputError(
       'Unable to generate the workflow. Modify the prompt and try again.',
