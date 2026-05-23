@@ -1,3 +1,5 @@
+import { IFlowConfig } from '@plumber/types'
+
 import { UnrecoverableError } from '@taskforcesh/bullmq-pro'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -31,9 +33,9 @@ const mocks = vi.hoisted(() => {
   }
   const flow = {
     id: 'flow-id',
-    config: null as { isKillswitched?: boolean } | null,
+    config: null as IFlowConfig | null,
     user: { email: 'test@example.com' },
-    steps: [],
+    steps: [] as unknown[],
   }
 
   return {
