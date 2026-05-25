@@ -58,6 +58,7 @@ describe('processTrigger', () => {
         lockAcquired = false
         return Promise.resolve(result)
       }),
+      transaction: vi.fn().mockImplementation((cb) => cb({})),
     } as any)
 
     vi.spyOn(Execution, 'query').mockReturnValue({
@@ -134,6 +135,7 @@ describe('processTrigger', () => {
       // Mock knex raw query for advisory lock - lock acquired successfully
       vi.spyOn(Execution, 'knex').mockReturnValue({
         raw: vi.fn().mockResolvedValue({ rows: [{ acquired: true }] }),
+        transaction: vi.fn().mockImplementation((cb) => cb({})),
       } as any)
 
       // Mock Execution query to return null (no existing execution)
@@ -216,6 +218,7 @@ describe('processTrigger', () => {
           lockAcquired = false
           return Promise.resolve(result)
         }),
+        transaction: vi.fn().mockImplementation((cb) => cb({})),
       } as any)
 
       // Mock Execution query
