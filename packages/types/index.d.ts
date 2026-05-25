@@ -224,7 +224,7 @@ export interface IFlowConfig {
   aiBuilderConfig?: {
     traceId: string // trace id on Rome (Langfuse)
   }
-  isKillswitched?: boolean
+  isForceClogged?: boolean
 }
 
 export type NotificationRecipients = 'editor' | 'viewer'

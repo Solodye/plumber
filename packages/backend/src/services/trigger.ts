@@ -59,8 +59,8 @@ export const processTrigger = async (
     .withGraphFetched('flow')
     .throwIfNotFound()
 
-  if (step.flow?.config?.isKillswitched) {
-    throw new UnrecoverableError(`Pipe ${flowId} has been killswitched`)
+  if (step.flow?.config?.isForceClogged) {
+    throw new UnrecoverableError(`Pipe ${flowId} has been force clogged`)
   }
 
   // only need to check if can proceed if there is no error and not a test run

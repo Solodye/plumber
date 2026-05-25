@@ -219,13 +219,13 @@ describe('webhook handler', () => {
     })
   })
 
-  describe('pipe killswitch', () => {
+  describe('pipe force clog', () => {
     beforeEach(() => {
       mocks.flow.config = {}
     })
 
     it('returns 500 and does not process the trigger or enqueue a job', async () => {
-      mocks.flow.config = { isKillswitched: true }
+      mocks.flow.config = { isForceClogged: true }
 
       await webhookHandler(request, mocks.response)
 

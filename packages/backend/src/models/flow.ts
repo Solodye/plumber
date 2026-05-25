@@ -77,7 +77,7 @@ class Flow extends Base {
               },
             },
           },
-          isKillswitched: {
+          isForceClogged: {
             type: 'boolean',
           },
         },

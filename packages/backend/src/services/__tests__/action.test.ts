@@ -136,9 +136,9 @@ describe('processAction', () => {
     mocks.executionStep.status = 'success'
   })
 
-  describe('pipe killswitch', () => {
-    it('sets executionError to UnrecoverableError when flow.config.isKillswitched is true', async () => {
-      mocks.flow.config = { isKillswitched: true }
+  describe('pipe force clog', () => {
+    it('sets executionError to UnrecoverableError when flow.config.isForceClogged is true', async () => {
+      mocks.flow.config = { isForceClogged: true }
       mocks.executionStep.isFailed = true
       mocks.executionStep.status = 'failure'
 
@@ -147,8 +147,8 @@ describe('processAction', () => {
       expect(result.executionError).toBeInstanceOf(UnrecoverableError)
     })
 
-    it('does not set executionError when flow.config.isKillswitched is false', async () => {
-      mocks.flow.config = { isKillswitched: false }
+    it('does not set executionError when flow.config.isForceClogged is false', async () => {
+      mocks.flow.config = { isForceClogged: false }
 
       const result = await processAction(OPTIONS)
 

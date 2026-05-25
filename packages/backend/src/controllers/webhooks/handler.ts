@@ -63,7 +63,7 @@ export default async (request: IRequest, response: Response) => {
     return response.sendStatus(404)
   }
 
-  if (flow.config?.isKillswitched) {
+  if (flow.config?.isForceClogged) {
     return response.sendStatus(500)
   }
 

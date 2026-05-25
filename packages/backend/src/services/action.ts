@@ -159,8 +159,8 @@ export const processAction = async (options: ProcessActionOptions) => {
   let runResult: IActionRunResult = {}
   let executionError: unknown = null
   try {
-    if (flow.config?.isKillswitched) {
-      throw new UnrecoverableError(`Pipe ${flowId} has been killswitched`)
+    if (flow.config?.isForceClogged) {
+      throw new UnrecoverableError(`Pipe ${flowId} has been force clogged`)
     }
 
     // Cannot assign directly to runResult due to void return type.

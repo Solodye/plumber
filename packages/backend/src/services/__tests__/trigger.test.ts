@@ -1,3 +1,5 @@
+import { IFlowConfig } from '@plumber/types'
+
 import { UnrecoverableError } from '@taskforcesh/bullmq-pro'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -14,7 +16,7 @@ const mocks = vi.hoisted(() => {
 
   const flow = {
     id: 'flow-id',
-    config: null as { isKillswitched?: boolean } | null,
+    config: null as IFlowConfig | null,
   }
 
   return {
@@ -61,17 +63,17 @@ describe('processTrigger', () => {
     mocks.flow.config = null
   })
 
-  describe('pipe killswitch', () => {
-    it('throws UnrecoverableError when flow.config.isKillswitched is true', async () => {
-      mocks.flow.config = { isKillswitched: true }
+  describe('pipe force clog', () => {
+    it('throws UnrecoverableError when flow.config.isForceClogged is true', async () => {
+      mocks.flow.config = { isForceClogged: true }
 
       await expect(
         processTrigger({ flowId: 'flow-id', stepId: 'step-id' }),
       ).rejects.toThrow(UnrecoverableError)
     })
 
-    it('does not throw when flow.config.isKillswitched is false', async () => {
-      mocks.flow.config = { isKillswitched: false }
+    it('does not throw when flow.config.isForceClogged is false', async () => {
+      mocks.flow.config = { isForceClogged: false }
 
       await expect(
         processTrigger({ flowId: 'flow-id', stepId: 'step-id' }),
