@@ -5,6 +5,8 @@ import { EditorContext } from '@/contexts/Editor'
 import { hexEncode } from '@/helpers/hex-encoding'
 import { TableVariable, Variable } from '@/helpers/variables'
 
+import EmailPreviewModal from '../EmailPreviewModal'
+
 import HtmlVariableModal from './HtmlVariableModal'
 import TableVariableModal from './TableVariableModal'
 import { VariableItem } from '.'
@@ -35,7 +37,8 @@ export default function VariableItemWithModal(
   const canOpenModal =
     // we do not want to show a table preview if there are no rows
     (variable.type === 'table' && variable.displayedValue !== '0 rows') ||
-    variable.type === 'html'
+    variable.type === 'html' ||
+    variable.type === 'email'
 
   const handleClick = () => {
     if (!onClick) {
@@ -85,6 +88,14 @@ export default function VariableItemWithModal(
             variable={variable}
             isOpen={isModalOpen}
             onClose={onModalClose}
+          />
+        )
+      case 'email':
+        return (
+          <EmailPreviewModal
+            isOpen={isModalOpen}
+            onClose={onModalClose}
+            html={(variable.value as string) ?? ''}
           />
         )
     }

@@ -22,7 +22,7 @@ import { POPOVER_MOTION_PROPS } from '@/theme/constants'
 
 import VariableItemWithModal from './VariableItemWithModal'
 
-const VARIABLES_WITH_MODALS = ['table', 'html']
+const VARIABLES_WITH_MODALS = ['table', 'html', 'email']
 const VARIABLE_ITEM_HEIGHT = 77
 const SUGGESTION_VARIABLE_ITEM_HEIGHT = 61
 
