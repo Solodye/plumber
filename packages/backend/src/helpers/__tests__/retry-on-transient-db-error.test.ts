@@ -207,6 +207,41 @@ describe('retryOnTransientDbError', () => {
     expect(mocks.logWarn).toHaveBeenCalledTimes(1)
   })
 
+  it('caps the actual sleep delay at maxDelayMs even with maximum jitter', async () => {
+    vi.useFakeTimers()
+    // Max jitter — without a cap on the final delay this would be 2 * prevFullDelay.
+    vi.spyOn(Math, 'random').mockReturnValue(1)
+
+    const err = makePgError('57P01')
+    const fn = vi.fn().mockRejectedValue(err)
+
+    const promise = retryOnTransientDbError(fn, {
+      maxAttempts: 4,
+      initialDelayMs: 100,
+      maxDelayMs: 300,
+    })
+    promise.catch((): undefined => undefined)
+
+    await vi.advanceTimersByTimeAsync(0)
+    // attempt 1: prevFull=100, delay=100+100=200 (below cap)
+    await vi.advanceTimersByTimeAsync(200)
+    // attempt 2: prevFull=200, delay=200+200=400 → capped to 300
+    await vi.advanceTimersByTimeAsync(300)
+    // attempt 3: prevFull=300 (capped), delay=300+300=600 → capped to 300
+    await vi.advanceTimersByTimeAsync(300)
+
+    await expect(promise).rejects.toBe(err)
+    expect(fn).toHaveBeenCalledTimes(4)
+
+    const loggedDelays = mocks.logWarn.mock.calls.map(
+      ([, payload]) => (payload as { delayMs: number }).delayMs,
+    )
+    expect(loggedDelays).toEqual([200, 300, 300])
+    for (const delay of loggedDelays) {
+      expect(delay).toBeLessThanOrEqual(300)
+    }
+  })
+
   it('unwraps Objection-wrapped transient errors', async () => {
     vi.useFakeTimers()
     vi.spyOn(Math, 'random').mockReturnValue(0)

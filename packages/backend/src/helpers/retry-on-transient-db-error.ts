@@ -138,7 +138,10 @@ export async function retryOnTransientDbError<T>(
         Math.pow(2, attempt - 1) * initialDelayMs,
         maxDelayMs,
       )
-      const delayMs = prevFullDelay + Math.round(Math.random() * prevFullDelay)
+      const delayMs = Math.min(
+        prevFullDelay + Math.round(Math.random() * prevFullDelay),
+        maxDelayMs,
+      )
 
       logger.warn('Retrying DB operation after transient error', {
         event: 'db-retry',
