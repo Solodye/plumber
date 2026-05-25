@@ -86,13 +86,17 @@ vi.mock('@/models/execution', () => ({
   },
 }))
 
-vi.mock('@/models/execution-step', () => ({
-  default: {
-    query: vi.fn(() => ({
-      where: vi.fn(() => []),
-    })),
-  },
-}))
+vi.mock('@/models/execution-step', () => {
+  const chainable: Record<string, unknown> = {}
+  chainable.where = vi.fn(() => chainable)
+  chainable.then = (onFulfilled: (value: unknown[]) => unknown) =>
+    onFulfilled([])
+  return {
+    default: {
+      query: vi.fn(() => chainable),
+    },
+  }
+})
 
 vi.mock('@/helpers/compute-for-each-parameters', () => ({
   getStepContext: vi.fn(() => ({
@@ -136,30 +140,25 @@ describe('processAction', () => {
     mocks.executionStep.status = 'success'
   })
 
-  describe('pipe force clog', () => {
-    it('sets executionError to UnrecoverableError when flow.config.isForceClogged is true', async () => {
+  describe('Force clogging', () => {
+    it('throws an UnrecoverableError when flow.config.isForceClogged is true', async () => {
       mocks.flow.config = { isForceClogged: true }
-      mocks.executionStep.isFailed = true
-      mocks.executionStep.status = 'failure'
 
       const result = await processAction(OPTIONS)
-
       expect(result.executionError).toBeInstanceOf(UnrecoverableError)
     })
 
-    it('does not set executionError when flow.config.isForceClogged is false', async () => {
+    it('does not throw UnrecoverableError when flow.config.isForceClogged is false', async () => {
       mocks.flow.config = { isForceClogged: false }
 
       const result = await processAction(OPTIONS)
-
       expect(result.executionError).toBeNull()
     })
 
-    it('does not set executionError when flow has no config', async () => {
+    it('does not throw error when flow has no config', async () => {
       mocks.flow.config = null
 
       const result = await processAction(OPTIONS)
-
       expect(result.executionError).toBeNull()
     })
   })

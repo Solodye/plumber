@@ -63,7 +63,7 @@ describe('processTrigger', () => {
     mocks.flow.config = null
   })
 
-  describe('pipe force clog', () => {
+  describe('Force clogging', () => {
     it('throws UnrecoverableError when flow.config.isForceClogged is true', async () => {
       mocks.flow.config = { isForceClogged: true }
 
