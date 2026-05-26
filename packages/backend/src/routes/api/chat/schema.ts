@@ -32,6 +32,17 @@ const messagePartSchema = z.discriminatedUnion('type', [
       z.object({ isChatReady: z.boolean() }),
     ]),
   }),
+  z.object({
+    type: z.literal('data-clarification'),
+    data: z.object({
+      questions: z.array(
+        z.object({
+          question: z.string(),
+          options: z.array(z.string()).min(2),
+        }),
+      ),
+    }),
+  }),
 ])
 
 const messageSchema = z.object({
