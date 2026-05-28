@@ -1,6 +1,6 @@
 import './MenuBar.scss'
 
-import type { TRteMenuOption } from '@plumber/types'
+import type { TFieldPreviewType, TRteMenuOption } from '@plumber/types'
 
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu'
@@ -10,6 +10,7 @@ import {
   RiBold,
   RiDeleteColumn,
   RiDeleteRow,
+  RiEyeLine,
   RiFormatClear,
   RiImageFill,
   RiInsertColumnRight,
@@ -31,17 +32,23 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Box,
+  Tooltip,
   useDisclosure,
 } from '@chakra-ui/react'
 import { Button, Link } from '@opengovsg/design-system-react'
 import { Editor } from '@tiptap/react'
 import { parse } from 'node-html-parser'
 
+import EmailPreviewModal from '@/components/EmailPreviewModal'
 import Form from '@/components/Form'
 import { RteMenuOption } from '@/graphql/__generated__/graphql'
 import { makeExternalLink } from '@/helpers/urls'
 
-import { simpleSubstitute, type VariableInfoMap } from './utils'
+import {
+  simpleSubstitute,
+  substituteForPreview,
+  type VariableInfoMap,
+} from './utils'
 import { BareEditor } from '.'
 
 const DEFAULT_MENU_BUTTONS = [
@@ -234,6 +241,7 @@ interface MenuBarProps {
   variableMap: VariableInfoMap
   editable: boolean
   customMenuOptions?: TRteMenuOption[]
+  previewType?: TFieldPreviewType
 }
 
 export const MenuBar = ({
@@ -241,15 +249,46 @@ export const MenuBar = ({
   variableMap,
   editable,
   customMenuOptions,
+  previewType,
 }: MenuBarProps) => {
   const {
     isOpen: isDialogOpen,
     onClose,
     onOpen: onDialogOpen,
   } = useDisclosure()
+  const {
+    isOpen: isPreviewOpen,
+    onOpen: onPreviewOpen,
+    onClose: onPreviewClose,
+  } = useDisclosure()
+  const [previewHtml, setPreviewHtml] = useState<string>('')
   const cancelRef = useRef(null)
   const [dialogValue, setDialogValue] = useState('')
   const [dialogLabel, setDialogLabel] = useState<RteMenuOption | null>(null)
+
+  const onPreview = useCallback(() => {
+    if (!editor) {
+      return
+    }
+    setPreviewHtml(substituteForPreview(editor.getHTML(), variableMap))
+    onPreviewOpen()
+  }, [editor, variableMap, onPreviewOpen])
+
+  const renderPreviewButton = () => {
+    if (!previewType) {
+      return null
+    }
+    switch (previewType) {
+      case 'email':
+        return (
+          <EmailPreviewModal
+            isOpen={isPreviewOpen}
+            onClose={onPreviewClose}
+            html={previewHtml}
+          />
+        )
+    }
+  }
 
   const onDialogClose = useCallback(() => {
     setDialogLabel(null)
@@ -402,7 +441,31 @@ export const MenuBar = ({
             </button>
           )
         })}
+        {previewType && editor && (
+          <>
+            <Box flex="1 0 4.2rem" aria-hidden />
+            <Tooltip label="Preview" hasArrow>
+              <button
+                type="button"
+                aria-label="Preview"
+                style={{
+                  borderRadius: '0.25rem',
+                  width: 'auto',
+                  minWidth: 0,
+                  backgroundColor: 'transparent',
+                  cursor: 'pointer',
+                  color: 'var(--chakra-colors-primary-300)',
+                }}
+                className="menu-item"
+                onClick={onPreview}
+              >
+                <RiEyeLine />
+              </button>
+            </Tooltip>
+          </>
+        )}
       </div>
+      {renderPreviewButton()}
       {isDialogOpen && dialogLabel && (
         <AlertDialog
           leastDestructiveRef={cancelRef}
