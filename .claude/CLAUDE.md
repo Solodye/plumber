@@ -30,7 +30,7 @@ Do **not** run these yourself unless the user asks — the human runs the dev se
 - **Backend test file naming**: `*.test.ts` = unit (no DB), `*.itest.ts` = integration (real Postgres/Redis/DynamoDB via testcontainers, single-threaded). Don't mix.
 - **Package manager**: only use `npm`. Never use `yarn`, `pnpm`, or other package managers.
 - **Installing packages**: always pass the `-E` (exact version) flag.
-- **Linting**: always run `npm run lint` and fix any errors before committing.
+- **Linting**: before committing, run `npm run lint:fix` (auto-fixes), then `npm run lint` and fix remaining errors. Scope to the workspace you touched: backend-only changes → `npm run -w backend lint:fix`; frontend-only → `npm run -w frontend lint:fix`; otherwise run the root command.
 
 ## Skills
 
