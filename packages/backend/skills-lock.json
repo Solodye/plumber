@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "rate-limiting": {
+      "source": "opengovsg/claude-skills",
+      "sourceType": "github",
+      "skillPath": "engineering/skills/rate-limiting/SKILL.md",
+      "computedHash": "1eb82d993e46056ce92bd90d30ba7fa49551455616734b904b043fb99ac9e863"
+    },
+    "secure-auth": {
+      "source": "opengovsg/claude-skills",
+      "sourceType": "github",
+      "skillPath": "engineering/skills/secure-auth/SKILL.md",
+      "computedHash": "18e645b4c8350f958044776a11af365a925fe454766b079ee2867651ae4d6c0e"
+    }
+  }
+}
