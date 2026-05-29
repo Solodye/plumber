@@ -31,7 +31,7 @@ Do **not** run these yourself unless the user asks — the human runs the dev se
 - **Package manager**: only use `npm`. Never use `yarn`, `pnpm`, or other package managers.
 - **Installing packages**: always pass the `-E` (exact version) flag.
 - **Linting**: before committing, run `npm run lint:fix` (auto-fixes), then `npm run lint` and fix remaining errors. Scope to the workspace you touched: backend-only changes → `npm run -w backend lint:fix`; frontend-only → `npm run -w frontend lint:fix`; otherwise run the root command.
-- **Branches & PRs**: managed via Graphite — always use the `graphite` skill. Before creating a new branch, ask the user what to name it. Naming convention: `feat/<feature>[/<subfeature>]` or `chore/<chore>[/<subchore>]`.
+- **Branches & PRs**: managed via Graphite (`gt`); use the `graphite` skill. Before creating a new branch, ask the user what to name it. Naming: `feat/<feature>[/<subfeature>]` or `chore/<chore>[/<subchore>]`.
 
 ## Skills
 
