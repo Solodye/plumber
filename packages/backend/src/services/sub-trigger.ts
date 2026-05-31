@@ -1,5 +1,6 @@
 import type { ITriggerItem, SubtriggerData } from '@plumber/types'
 
+import { randomUUID } from 'crypto'
 import get from 'lodash.get'
 
 import logger from '@/helpers/logger'
@@ -108,6 +109,8 @@ export const processSubTrigger = async (
     return null
   }
 
+  // we generate an execution step id here instead of relying on the db generation to prevent possibility of duplicate entry during retries
+  const executionStepId = randomUUID()
   const executionStep = await retryOnTransientDbError(
     () =>
       ExecutionStep.transaction(async (trx) => {
@@ -130,14 +133,18 @@ export const processSubTrigger = async (
           return null
         }
         // Create the execution step for the MRF action step
-        return await ExecutionStep.query(trx).insertAndFetch({
-          stepId: mrfStep.id,
-          executionId: execution.id,
-          dataIn: mrfStep.parameters,
-          dataOut: triggerItem.raw,
-          appKey: mrfStep.appKey,
-          key: mrfStep.key,
-        })
+        return await ExecutionStep.query(trx)
+          .insertAndFetch({
+            id: executionStepId,
+            stepId: mrfStep.id,
+            executionId: execution.id,
+            dataIn: mrfStep.parameters,
+            dataOut: triggerItem.raw,
+            appKey: mrfStep.appKey,
+            key: mrfStep.key,
+          })
+          .onConflict('id')
+          .ignore()
       }),
     { context: { flowId, executionId: execution.id, stepId: mrfStep.id } },
   )

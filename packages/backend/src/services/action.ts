@@ -1,6 +1,7 @@
 import type { IActionRunResult, TestRunStepMetadata } from '@plumber/types'
 
 import { UnrecoverableError } from '@taskforcesh/bullmq-pro'
+import { randomUUID } from 'crypto'
 
 import {
   FOR_EACH_ITERATION_DELAY,
@@ -210,19 +211,26 @@ export const processAction = async (options: ProcessActionOptions) => {
     })
   }
 
+  // we generate an execution step id here instead of relying on the db generation to prevent possibility of duplicate entry during retries
+  const executionStepId = randomUUID()
   const executionStep = await retryOnTransientDbError(
     () =>
-      execution.$relatedQuery('executionSteps').insertAndFetch({
-        stepId: $.step.id,
-        status,
-        dataIn: computedParameters,
-        dataOut: $.actionOutput.data?.raw ?? null,
-        errorDetails: $.actionOutput.error ?? null,
-        appKey: $.app.key,
-        jobId,
-        key: step.key,
-        metadata: { ...metadata, ...$.actionOutput.data?.meta },
-      }),
+      execution
+        .$relatedQuery('executionSteps')
+        .insertAndFetch({
+          id: executionStepId,
+          stepId: $.step.id,
+          status,
+          dataIn: computedParameters,
+          dataOut: $.actionOutput.data?.raw ?? null,
+          errorDetails: $.actionOutput.error ?? null,
+          appKey: $.app.key,
+          jobId,
+          key: step.key,
+          metadata: { ...metadata, ...$.actionOutput.data?.meta },
+        })
+        .onConflict('id')
+        .ignore(),
     { context: { executionId: execution.id, stepId: $.step.id, jobId } },
   )
 
